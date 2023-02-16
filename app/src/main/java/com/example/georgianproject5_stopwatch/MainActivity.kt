@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
     private var offset: Long = 0        // The base offset for the stopwatch.
 
 
-    private var totalSecs = 0
+    private var addedSeconds = 0
     var firstTime = true
 
     private val OFFSETKEY = "offset"
@@ -47,29 +47,33 @@ class MainActivity : AppCompatActivity() {
         // To add 5,10 or 20 Seconds in Timer.
         val sec5 = findViewById<Button>(R.id.button5)
         sec5.setOnClickListener {
-            totalSecs = totalSecs + 5
-            updateBaseTime(isFirst = true)
+            addedSeconds = addedSeconds + 5
+            updateBaseTime(firstTimeSet = true)
         }
         val sec10 = findViewById<Button>(R.id.button10)
         sec10.setOnClickListener {
-            totalSecs = totalSecs + 10
-            updateBaseTime(isFirst = true)
+            addedSeconds = addedSeconds + 10
+            updateBaseTime(firstTimeSet = true)
         }
         val sec20 = findViewById<Button>(R.id.button20)
         sec20.setOnClickListener {
-            totalSecs = totalSecs + 20
-            updateBaseTime(isFirst = true)
+            addedSeconds = addedSeconds + 20
+            updateBaseTime(firstTimeSet = true)
         }
+
+        // When time comes to 00:00, it will stop the stopwatch so it won't go negetive.
         stopwatch.setOnChronometerTickListener {
             if (it.text.contentEquals("00:00", true)) {
                 stopwatch.stop()
-                totalSecs = 0
+                addedSeconds = 0
             }
         }
+
+
         val startButton = findViewById<Button>(R.id.start_button)
         startButton.setOnClickListener {
             if (!running) {
-                updateBaseTime(isFirst = firstTime)
+                updateBaseTime(firstTimeSet = firstTime)
                 if (firstTime) {
                     firstTime = false
                 }
@@ -79,13 +83,17 @@ class MainActivity : AppCompatActivity() {
         }
         val pauseButton = findViewById<Button>(R.id.pause_button)
         pauseButton.setOnClickListener {
-            stopCount()
+            if (running) {
+                saveOffset()
+                stopwatch.stop()
+                running = false
+            }
         }
         val resetButton = findViewById<Button>(R.id.reset_button)
         resetButton.setOnClickListener {
             offset = 0
-            totalSecs = 0
-            updateBaseTime(isFirst = true)
+            addedSeconds = 0
+            updateBaseTime(firstTimeSet = true)
         }
     }
 
@@ -114,9 +122,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateBaseTime(isFirst: Boolean = false) {
-        if (isFirst) {
-            stopwatch.base = SystemClock.elapsedRealtime() + (totalSecs * 1000) - offset
+    private fun updateBaseTime(firstTimeSet: Boolean = false) {
+        if (firstTimeSet) {
+            stopwatch.base = SystemClock.elapsedRealtime() + (addedSeconds * 1000) - offset
         } else {
             stopwatch.base = SystemClock.elapsedRealtime() - offset
         }
@@ -126,38 +134,4 @@ class MainActivity : AppCompatActivity() {
         offset = SystemClock.elapsedRealtime() - stopwatch.base
     }
 
-    private fun stopCount() {
-        if (running) {
-            saveOffset()
-            stopwatch.stop()
-            running = false
-        }
-    }
 }
-
-
-
-//  -------------- Original Code ------------
-
-//        startButton.setOnClickListener{
-//            if(!running){
-//                setBaseTime()
-//                stopwatch.start()
-//                running = true
-//            }
-//        }
-//        val pauseButton = findViewById<Button>(R.id.pause_button)
-//        pauseButton.setOnClickListener(){
-//            if(running){
-//                saveOffset()
-//                stopwatch.stop()
-//                running = false
-//            }
-//        }
-//        val resetButton = findViewById<Button>(R.id.reset_button)
-//        resetButton.setOnClickListener(){
-//            offset = 0
-//            setBaseTime()
-//            stopwatch.stop()
-//            running = false
-//        }
