@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">GeorgianProject5_StopWatch</string>
+    <string name="start">Start</string>
+    <string name="pause">Pause</string>
+    <string name="reset">Reset</string>
+    <string name="button5">+5</string>
+    <string name="button10">+10</string>
+    <string name="button20">+20</string>
+
+</resources>
